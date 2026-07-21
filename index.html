@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Keukenwinkel</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F1F3EE;
+    --card: #FFFFFF;
+    --ink: #20242A;
+    --ink-soft: #5B6259;
+    --delft: #2C4A6E;
+    --delft-light: #4C6D91;
+    --copper: #A8672E;
+    --hairline: #DADFD5;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior-y: contain;
+  }
+
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bg);
+    padding: calc(18px + var(--safe-top)) 18px 0;
+  }
+
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--delft);
+    margin: 0 0 4px;
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 25px;
+    line-height: 1.1;
+    margin: 0 0 14px;
+    letter-spacing: -0.01em;
+  }
+
+  .chips {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 14px;
+    scrollbar-width: none;
+  }
+  .chips::-webkit-scrollbar { display: none; }
+
+  .chip {
+    flex: 0 0 auto;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13.5px;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 999px;
+    background: var(--card);
+    border: 1px solid var(--hairline);
+    color: var(--ink-soft);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+
+  .chip.active {
+    background: var(--delft);
+    border-color: var(--delft);
+    color: #fff;
+  }
+
+  main { padding: 4px 14px calc(30px + var(--safe-bottom)); }
+
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 18px;
+    margin: 20px 6px 10px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.12s ease;
+  }
+  .card:active { transform: scale(0.97); }
+
+  .tile-mark { position: absolute; top: 0; left: 0; width: 18px; height: 18px; z-index: 2; }
+
+  .thumb {
+    width: 100%;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    display: block;
+    background: var(--bg);
+  }
+
+  .card-body { padding: 10px 11px 12px; }
+
+  .card-body h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 14.5px;
+    margin: 0 0 6px;
+    line-height: 1.25;
+  }
+
+  .price {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--copper);
+    background: #FBF3EA;
+    border: 1px solid #EBD9C4;
+    padding: 3px 9px;
+    border-radius: 999px;
+  }
+
+  .empty { text-align: center; padding: 60px 20px; color: var(--ink-soft); font-size: 14px; }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow" id="eyebrow">Catalogus</p>
+  <h1 id="shopname">Keukenwinkel</h1>
+  <div class="chips" id="chips"></div>
+</header>
+
+<main id="main">
+  <div class="empty">Producten laden…</div>
+</main>
+
+<script>
+  const tg = window.Telegram?.WebApp;
+  if (tg) { tg.ready(); tg.expand(); }
+
+  const tileMark = `<div class="tile-mark"><svg width="18" height="18" viewBox="0 0 22 22"><path d="M0 0 A22 22 0 0 1 22 0 L22 4 A18 18 0 0 0 0 4 Z" fill="#2C4A6E" opacity="0.85"/></svg></div>`;
+
+  const fmtPrice = (n) => new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(n);
+
+  let data = { categorieen: [] };
+  let activeCat = 'alle';
+
+  function renderChips() {
+    const chips = document.getElementById('chips');
+    const all = [{ id: 'alle', naam: 'Alles' }, ...data.categorieen];
+    chips.innerHTML = all.map(c =>
+      `<div class="chip ${c.id === activeCat ? 'active' : ''}" data-id="${c.id}">${c.naam}</div>`
+    ).join('');
+    chips.querySelectorAll('.chip').forEach(el => {
+      el.addEventListener('click', () => {
+        activeCat = el.dataset.id;
+        renderChips();
+        renderProducts();
+      });
+    });
+  }
+
+  function productCard(p) {
+    return `
+      <div class="card">
+        ${tileMark}
+        <img class="thumb" src="${p.afbeelding}" alt="${p.naam}" loading="lazy">
+        <div class="card-body">
+          <h3>${p.naam}</h3>
+          <span class="price">${fmtPrice(p.prijs)}</span>
+        </div>
+      </div>`;
+  }
+
+  function renderProducts() {
+    const main = document.getElementById('main');
+    const cats = activeCat === 'alle' ? data.categorieen : data.categorieen.filter(c => c.id === activeCat);
+
+    if (!cats.length || cats.every(c => !c.producten.length)) {
+      main.innerHTML = '<div class="empty">Nog geen producten in deze categorie.</div>';
+      return;
+    }
+
+    main.innerHTML = cats.map(c => `
+      ${activeCat === 'alle' ? `<div class="section-title">${c.naam}</div>` : ''}
+      <div class="grid">${c.producten.map(productCard).join('')}</div>
+    `).join('');
+  }
+
+  fetch('products.json?_=' + Date.now())
+    .then(r => r.json())
+    .then(json => {
+      data = json;
+      document.getElementById('shopname').textContent = data.winkelnaam || 'Keukenwinkel';
+      renderChips();
+      renderProducts();
+    })
+    .catch(() => {
+      document.getElementById('main').innerHTML = '<div class="empty">Kon producten niet laden.</div>';
+    });
+</script>
+
+</body>
+</html>
