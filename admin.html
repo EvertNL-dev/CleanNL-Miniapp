@@ -1,30 +1,32 @@
 <!doctype html>
 <html lang="nl">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CleanNL Admin v2</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
-<body class="admin">
+<body>
   <main class="admin-wrap">
-    <h1>Beheer producten</h1>
-    <p>Deze versie heeft per product een duidelijke sectie voor meerdere hoeveelheden en prijzen.</p>
+    <header class="admin-header">
+      <div>
+        <h1>Admin</h1>
+        <p>Producten beheren, media uploaden en opslaan.</p>
+      </div>
+      <div class="actions">
+        <button id="resetData" type="button" class="btn-secondary">Herlaad data</button>
+        <button id="addCategory" type="button" class="btn-secondary">+ Categorie toevoegen</button>
+        <button id="save" type="button" class="btn">Opslaan</button>
+      </div>
+    </header>
 
-    <div id="categories"></div>
-
-    <div class="actions">
-      <button id="addCategory" class="btn-secondary">+ Nieuwe categorie</button>
-      <button id="save" class="btn">Wijzigingen opslaan</button>
-      <button id="resetData" class="btn-secondary">Reset demo data</button>
-    </div>
+    <section class="panel">
+      <h2>Cloudinary instellingen</h2>
+      <p>Vul deze eenmalig in via opslag in <code>cld-config</code> of voeg hier later een klein config-formulier toe.</p>
+      <div id="categories"></div>
+    </section>
   </main>
 
-  <script src="./data.js"></script>
-  <script src="./storage.js"></script>
-  <script src="./admin.js" defer></script>
+  <script src="admin.js" defer></script>
 </body>
 </html>
