@@ -1,0 +1,49 @@
+{
+  "categories": [
+    "Keukengerei",
+    "Opberg & organisatie",
+    "Koken & bakken"
+  ],
+  "products": [
+    {
+      "id": "prod_001",
+      "name": "Groentesnijder 8-in-1",
+      "category": "Keukengerei",
+      "price": 14.95,
+      "currency": "EUR",
+      "unit": "stuk",
+      "quantities": [
+        { "label": "1 stuk", "amount": 1, "price": 14.95 },
+        { "label": "2 stuks", "amount": 2, "price": 24.95 },
+        { "label": "3 stuks", "amount": 3, "price": 32.95 }
+      ],
+      "description": "Snel groenten snijden, raspen en spiraliseren met 8 verwisselbare bladen.",
+      "images": [
+        "https://res.cloudinary.com/demo/image/upload/v1/sample_product_1_a.jpg",
+        "https://res.cloudinary.com/demo/image/upload/v1/sample_product_1_b.jpg"
+      ],
+      "videos": [
+        "https://res.cloudinary.com/demo/video/upload/v1/sample_product_1.mp4"
+      ],
+      "active": true
+    },
+    {
+      "id": "prod_002",
+      "name": "Vershoud siliconen deksels (set van 6)",
+      "category": "Opberg & organisatie",
+      "price": 9.95,
+      "currency": "EUR",
+      "unit": "set",
+      "quantities": [
+        { "label": "1 set", "amount": 1, "price": 9.95 },
+        { "label": "2 sets", "amount": 2, "price": 17.95 }
+      ],
+      "description": "Herbruikbare deksels in verschillende maten, houden voedsel langer vers.",
+      "images": [
+        "https://res.cloudinary.com/demo/image/upload/v1/sample_product_2_a.jpg"
+      ],
+      "videos": [],
+      "active": true
+    }
+  ]
+}
